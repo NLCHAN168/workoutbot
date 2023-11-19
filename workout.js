@@ -243,9 +243,6 @@ for (let exercise of workouts) {
     l_exercises++;
   }
 }
-console.log("c exercises " + c_exercises);
-console.log("b exercises " + b_exercises);
-console.log("l exercises " + l_exercises);
 
 const myIntents = new IntentsBitField();
 myIntents.add(
@@ -275,13 +272,11 @@ client.on("messageCreate", async (message) => {
       collectedMessage.reply(
         getWorkout(collectedMessage.content, message.content).toString()
       );
-      collector.stop;
       console.log(`Collected message: ${collectedMessage.content}`);
     });
     collector.on("end", (reason) => {
       if (reason === "time") {
         console.log("Collector ended: Time limit reached");
-        collector.stop;
       } else {
         console.log(`Collector ended: ${reason}`);
         collector.stop;
