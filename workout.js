@@ -5,8 +5,6 @@ import {
   Partials,
   MessageCollector,
 } from "discord.js";
-import promptSync from "prompt-sync";
-const prompt = promptSync();
 
 let workouts = [
   {
