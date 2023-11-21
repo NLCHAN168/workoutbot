@@ -1,9 +1,8 @@
 import { config } from "dotenv";
 import {
-  Client,
+  Client, DMChannel,
   IntentsBitField,
   Partials,
-  MessageCollector,
 } from "discord.js";
 
 let workouts = [
@@ -253,7 +252,7 @@ myIntents.add(
 const client = new Client({ intents: myIntents, partials: [Partials.Channel] });
 
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) {
+  if (message.author.bot || !(message.channel instanceof DMChannel)) {
     return;
   }
   if (
@@ -261,10 +260,11 @@ client.on("messageCreate", async (message) => {
     message.content === "back" ||
     message.content === "leg"
   ) {
-    message.reply("How many exercises?");
+    await message.reply("How many exercises?");
     const collector = message.channel.createMessageCollector({
       filter: (message) => !message.author.bot,
       max: 1,
+      time: 60000 // Add a 1 minute timeout
     });
     collector.on("collect", (collectedMessage) => {
       collectedMessage.reply(
@@ -272,12 +272,13 @@ client.on("messageCreate", async (message) => {
       );
       console.log(`Collected message: ${collectedMessage.content}`);
     });
-    collector.on("end", (reason) => {
+    collector.on("end", async (collected, reason) => {
       if (reason === "time") {
         console.log("Collector ended: Time limit reached");
+        await message.channel?.send("Time limit exceeded for response.");
       } else {
         console.log(`Collector ended: ${reason}`);
-        collector.stop;
+        collector.stop();
       }
     });
   }
